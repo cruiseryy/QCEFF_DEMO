@@ -20,11 +20,15 @@ bins = np.linspace(-3, 3, 60)
 for i in range(1, T):
     xp = M @ xa + sigma * np.random.randn(2, N)
     yp = H @ xp
+
     ya = y_obs[i] + sigma * np.random.randn(1, N)
+
     Si = np.cov(xp, ddof = 1)
     Ki = Si @ H.T * 1 / ( H @ Si @ H.T + sigma**2)
     xa = xp + Ki @ (ya - yp)
+    
     ya = H @ xa
+
     xx[i, :, :] = xa 
     fig, ax = plt.subplots()
     hyp, hxp, _ = ax.hist(yp[0, :], bins, alpha=0.5, label='prior')
