@@ -20,9 +20,21 @@ bins = np.linspace(-3, 3, 60)
 for i in range(1, T):
     xp = M @ xa + sigma * np.random.randn(2, N)
     yp = H @ xp
+
+    # Fitting and merging the prior and likelihood 
+    # closed here since both are Gaussian
+    mu_yp = np.mean(yp)
+    sigma_yp = np.std(yp, ddof = 1)
+    mu_yo = y_obs[i]
+    sigma_yo = sigma
+    mu_ya = (mu_yp/sigma_yp**2 + mu_yo/sigma_yo**2) / (1/sigma_yp**2 + 1/sigma_yo**2)
+    sigma_ya = np.sqrt(1 / (1/sigma_yp**2 + 1/sigma_yo**2))
+    ya = (yp - mu_yp) / sigma_yp * sigma_ya + mu_ya
+
+    Si = np.cov(xp, ddof = 1)
+    Ki = Si @ H.T * 1 / ( H @ Si @ H.T + sigma**2)
+    xa = xp + Ki @ (ya - yp)
     
-    # fill this 
-    # later
     xx[i, :, :] = xa 
     fig, ax = plt.subplots()
     hyp, hxp, _ = ax.hist(yp[0, :], bins, alpha=0.5, label='prior')
