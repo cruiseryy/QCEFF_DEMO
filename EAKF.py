@@ -31,9 +31,11 @@ for i in range(1, T):
     sigma_ya = np.sqrt(1 / (1/sigma_yp**2 + 1/sigma_yo**2))
     ya = (yp - mu_yp) / sigma_yp * sigma_ya + mu_ya
 
-    Si = np.cov(xp, ddof = 1)
-    Ki = Si @ H.T * 1 / ( H @ Si @ H.T + sigma**2)
-    xa = xp + Ki @ (ya - yp)
+    dy = ya - yp
+    SIGMA = np.cov(xp, yp, ddof = 1)
+    sigma_xy = SIGMA[-1, :-1]
+    sigma_yy = SIGMA[-1, -1]
+    xa = xp + sigma_xy[:, None] / sigma_yy @ dy
     
     xx[i, :, :] = xa 
     fig, ax = plt.subplots()
